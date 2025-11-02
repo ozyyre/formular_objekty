@@ -1,35 +1,29 @@
-
 const kalkulacka = {
     historie: [],
 
     vypocet: function(velikost, jednotkaVelikost, rychlost, jednotkaRychlost) {
-       
         let velikostBit;
         if (jednotkaVelikost === "MB") {
             velikostBit = velikost * 1024 * 1024 * 8;
         } else if (jednotkaVelikost === "GB") {
-            velikostBit = velikost * 1024 * 1024 * 1024 * 8; 
+            velikostBit = velikost * 1024 * 1024 * 1024 * 8;
         }
 
-        
         let rychlostBit;
         if (jednotkaRychlost === "Mbps") {
-            rychlostBit = rychlost * 1000000; 
+            rychlostBit = rychlost * 1000000;
         } else if (jednotkaRychlost === "MBps") {
-            rychlostBit = rychlost * 8 * 1024 * 1024; 
+            rychlostBit = rychlost * 8 * 1024 * 1024;
         }
 
-       
         const casSekundy = velikostBit / rychlostBit;
 
-       
         const hodiny = Math.floor(casSekundy / 3600);
         const minuty = Math.floor((casSekundy % 3600) / 60);
         const sekundy = Math.floor(casSekundy % 60);
 
         const vysledekText = `${hodiny}h ${minuty}m ${sekundy}s`;
 
-        
         this.historie.push({
             velikost: velikost + " " + jednotkaVelikost,
             rychlost: rychlost + " " + jednotkaRychlost,
@@ -39,7 +33,6 @@ const kalkulacka = {
         return vysledekText;
     }
 };
-
 
 document.getElementById("transferForm").addEventListener("submit", function(e) {
     e.preventDefault();
@@ -58,12 +51,14 @@ document.getElementById("transferForm").addEventListener("submit", function(e) {
 
     document.getElementById("vysledek").textContent = "Čas přenosu: " + vysledek;
 
-    
-    const historieDiv = document.getElementById("historie");
-    if (historieDiv) {
-        historieDiv.innerHTML = ""; // vyčistí předchozí historii
-        kalkulacka.historie.forEach((item, index) => {
-            historieDiv.innerHTML += `<p>${index + 1}. Soubor: ${item.velikost}, Rychlost: ${item.rychlost}, Čas: ${item.cas}</p>`;
-        });
-    }
+   
+    const historieUL = document.getElementById("historie");
+    historieUL.innerHTML = "";
+    kalkulacka.historie.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.textContent = `${index + 1}. Soubor: ${item.velikost}, Rychlost: ${item.velikost}, Čas: ${item.cas}`;
+        historieUL.appendChild(li);
+    });
 });
+
