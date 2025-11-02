@@ -1,48 +1,50 @@
-// Objekt pro kalkulačku
-const kalkulacka = {
-  // Převody jednotek
-  jednotky: {
-    velikost: { MB: 1, GB: 1024 },
-    rychlost: { MBps: 1, Mbps: 1 / 8 } // 1 megabit = 1/8 megabajtu
-  },
 
-  // Vlastnost pro historii
+const kalkulacka = {
   historie: [],
 
-  // Metoda pro výpočet času přenosu
-  vypocitejCas: function(velikost, jednVel, rychlost, jednRych) {
-    const velikostMB = velikost * this.jednotky.velikost[jednVel];
-    const rychlostMBps = rychlost * this.jednotky.rychlost[jednRych];
+  prepocetNaBity: function(velikost, jednotkaVelikost) {
+    if (jednotkaVelikost === "GB") {
+      return velikost * 1024 * 1024 * 8;
+    }
+    return velikost * 1024 * 1024 * 8; 
+  },
 
-    const casSekundy = velikostMB / rychlostMBps;
-    this.historie.push({ velikost, jednVel, rychlost, jednRych, casSekundy });
+  prepocetRychlosti: function(rychlost, jednotkaRychlost) {
+    if (jednotkaRychlost === "Mbps") return rychlost * 1000000; 
+    if (jednotkaRychlost === "MBps") return rychlost * 8 * 1000000; 
+    return rychlost;
+  },
 
+  vypocetCas: function(velikost, jednotkaVelikost, rychlost, jednotkaRychlost) {
+    let velikostBit = this.prepocetNaBity(velikost, jednotkaVelikost);
+    let rychlostBit = this.prepocetRychlosti(rychlost, jednotkaRychlost);
+    let casSekundy = velikostBit / rychlostBit;
     return casSekundy;
+  },
+
+  formatCas: function(casSekundy) {
+    let h = Math.floor(casSekundy / 3600);
+    let m = Math.floor((casSekundy % 3600) / 60);
+    let s = Math.floor(casSekundy % 60);
+    return `${h} h ${m} min ${s} s`;
   }
 };
 
-// Pomocná funkce na formátování času
-function formatCas(sekundy) {
-  const hodiny = Math.floor(sekundy / 3600);
-  const minuty = Math.floor((sekundy % 3600) / 60);
-  const sekundyZbyv = Math.round(sekundy % 60);
-  return `${hodiny} h ${minuty} min ${sekundyZbyv} s`;
-}
+document.getElementById("transferForm").addEventListener("submit", function(e) {
+  e.preventDefault();
 
-// Po odeslání formuláře
-document.getElementById("formular").addEventListener("submit", function(event) {
-  event.preventDefault();
+  let velikost = parseFloat(document.getElementById("velikost").value);
+  let jednotkaVelikost = document.getElementById("jednotkaVelikost").value;
+  let rychlost = parseFloat(document.getElementById("rychlost").value);
+  let jednotkaRychlost = document.getElementById("jednotkaRychlost").value;
 
-  const velikost = parseFloat(document.getElementById("velikost").value);
-  const jednVel = document.getElementById("jednotkaVelikost").value;
-  const rychlost = parseFloat(document.getElementById("rychlost").value);
-  const jednRych = document.getElementById("jednotkaRychlost").value;
-
-  if (velikost <= 0 || rychlost <= 0 || isNaN(velikost) || isNaN(rychlost)) {
+  if (velikost <= 0 || rychlost <= 0) {
     document.getElementById("vysledek").innerText = "Zadej kladné hodnoty!";
     return;
   }
 
-  const cas = kalkulacka.vypocitejCas(velikost, jednVel, rychlost, jednRych);
-  document.getElementById("vysledek").innerText = "Přenos bude trvat přibližně " + formatCas(cas) + ".";
+  let cas = kalkulacka.vypocetCas(velikost, jednotkaVelikost, rychlost, jednotkaRychlost);
+
+  document.getElementById("vysledek").innerText = 
+    "Přenos bude trvat přibližně " + kalkulacka.formatCas(cas) + ".";
 });
