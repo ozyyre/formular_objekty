@@ -1,67 +1,69 @@
 
 const kalkulacka = {
-  historie: [],
+    historie: [],
 
-  prepocetNaBity: function(velikost, jednotkaVelikost) {
-    if (jednotkaVelikost === "GB") {
-      return velikost * 1024 * 1024 * 8; 
+    vypocet: function(velikost, jednotkaVelikost, rychlost, jednotkaRychlost) {
+       
+        let velikostBit;
+        if (jednotkaVelikost === "MB") {
+            velikostBit = velikost * 1024 * 1024 * 8;
+        } else if (jednotkaVelikost === "GB") {
+            velikostBit = velikost * 1024 * 1024 * 1024 * 8; 
+        }
+
+        
+        let rychlostBit;
+        if (jednotkaRychlost === "Mbps") {
+            rychlostBit = rychlost * 1000000; 
+        } else if (jednotkaRychlost === "MBps") {
+            rychlostBit = rychlost * 8 * 1024 * 1024; 
+        }
+
+       
+        const casSekundy = velikostBit / rychlostBit;
+
+       
+        const hodiny = Math.floor(casSekundy / 3600);
+        const minuty = Math.floor((casSekundy % 3600) / 60);
+        const sekundy = Math.floor(casSekundy % 60);
+
+        const vysledekText = `${hodiny}h ${minuty}m ${sekundy}s`;
+
+        
+        this.historie.push({
+            velikost: velikost + " " + jednotkaVelikost,
+            rychlost: rychlost + " " + jednotkaRychlost,
+            cas: vysledekText
+        });
+
+        return vysledekText;
     }
-    return velikost * 1024 * 1024 * 8; 
-  },
-
-  prepocetRychlosti: function(rychlost, jednotkaRychlost) {
-    if (jednotkaRychlost === "Mbps") return rychlost * 1000000;
-    if (jednotkaRychlost === "MBps") return rychlost * 8 * 1000000; 
-    return rychlost;
-  },
-
-  vypocetCas: function(velikost, jednotkaVelikost, rychlost, jednotkaRychlost) {
-    let velikostBit = this.prepocetNaBity(velikost, jednotkaVelikost);
-    let rychlostBit = this.prepocetRychlosti(rychlost, jednotkaRychlost);
-    let casSekundy = velikostBit / rychlostBit;
-    return casSekundy;
-  },
-
-  formatCas: function(casSekundy) {
-    let h = Math.floor(casSekundy / 3600);
-    let m = Math.floor((casSekundy % 3600) / 60);
-    let s = Math.floor(casSekundy % 60);
-    return `${h} h ${m} min ${s} s`;
-  },
-
-  pridejDoHistorie: function(vypocet) {
-    this.historie.push(vypocet);
-    this.zobrazHistorii();
-  },
-
-  zobrazHistorii: function() {
-    const list = document.getElementById("historie");
-    list.innerHTML = "";
-    this.historie.forEach((v, index) => {
-      const li = document.createElement("li");
-      li.className = "list-group-item";
-      li.textContent = `${index + 1}. ${v.velikost} ${v.jednotkaVelikost} → ${v.rychlost} ${v.jednotkaRychlost} = ${v.cas}`;
-      list.appendChild(li);
-    });
-  }
 };
 
+
 document.getElementById("transferForm").addEventListener("submit", function(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  let velikost = parseFloat(document.getElementById("velikost").value);
-  let jednotkaVelikost = document.getElementById("jednotkaVelikost").value;
-  let rychlost = parseFloat(document.getElementById("rychlost").value);
-  let jednotkaRychlost = document.getElementById("jednotkaRychlost").value;
+    const velikost = parseFloat(document.getElementById("velikost").value);
+    const jednotkaVelikost = document.getElementById("jednotkaVelikost").value;
+    const rychlost = parseFloat(document.getElementById("rychlost").value);
+    const jednotkaRychlost = document.getElementById("jednotkaRychlost").value;
 
-  if (velikost <= 0 || rychlost <= 0) {
-    document.getElementById("vysledek").innerText = "Zadej kladné hodnoty!";
-    return;
-  }
+    if (velikost <= 0 || rychlost <= 0) {
+        alert("Zadej kladné hodnoty pro velikost a rychlost!");
+        return;
+    }
 
-  let cas = kalkulacka.vypocetCas(velikost, jednotkaVelikost, rychlost, jednotkaRychlost);
-  let casFormat = kalkulacka.formatCas(cas);
+    const vysledek = kalkulacka.vypocet(velikost, jednotkaVelikost, rychlost, jednotkaRychlost);
 
-  document.getElementById("vysledek").innerText = "Přenos bude trvat přibližně " + casFormat + ".";
+    document.getElementById("vysledek").textContent = "Čas přenosu: " + vysledek;
 
-
+    
+    const historieDiv = document.getElementById("historie");
+    if (historieDiv) {
+        historieDiv.innerHTML = ""; // vyčistí předchozí historii
+        kalkulacka.historie.forEach((item, index) => {
+            historieDiv.innerHTML += `<p>${index + 1}. Soubor: ${item.velikost}, Rychlost: ${item.rychlost}, Čas: ${item.cas}</p>`;
+        });
+    }
+});
