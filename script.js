@@ -1,17 +1,17 @@
-
+// objekt kalkulačky
 const kalkulacka = {
   historie: [],
 
   prepocetNaBity: function(velikost, jednotkaVelikost) {
     if (jednotkaVelikost === "GB") {
-      return velikost * 1024 * 1024 * 8;
+      return velikost * 1024 * 1024 * 8; // GB → bity
     }
-    return velikost * 1024 * 1024 * 8; 
+    return velikost * 1024 * 1024 * 8; // MB → bity
   },
 
   prepocetRychlosti: function(rychlost, jednotkaRychlost) {
-    if (jednotkaRychlost === "Mbps") return rychlost * 1000000; 
-    if (jednotkaRychlost === "MBps") return rychlost * 8 * 1000000; 
+    if (jednotkaRychlost === "Mbps") return rychlost * 1000000; // Mbps → b/s
+    if (jednotkaRychlost === "MBps") return rychlost * 8 * 1000000; // MB/s → b/s
     return rychlost;
   },
 
@@ -27,9 +27,26 @@ const kalkulacka = {
     let m = Math.floor((casSekundy % 3600) / 60);
     let s = Math.floor(casSekundy % 60);
     return `${h} h ${m} min ${s} s`;
+  },
+
+  pridejDoHistorie: function(vypocet) {
+    this.historie.push(vypocet);
+    this.zobrazHistorii();
+  },
+
+  zobrazHistorii: function() {
+    const list = document.getElementById("historie");
+    list.innerHTML = "";
+    this.historie.forEach((v, index) => {
+      const li = document.createElement("li");
+      li.className = "list-group-item";
+      li.textContent = `${index + 1}. ${v.velikost} ${v.jednotkaVelikost} → ${v.rychlost} ${v.jednotkaRychlost} = ${v.cas}`;
+      list.appendChild(li);
+    });
   }
 };
 
+// připojení formuláře
 document.getElementById("transferForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -44,7 +61,16 @@ document.getElementById("transferForm").addEventListener("submit", function(e) {
   }
 
   let cas = kalkulacka.vypocetCas(velikost, jednotkaVelikost, rychlost, jednotkaRychlost);
+  let casFormat = kalkulacka.formatCas(cas);
 
-  document.getElementById("vysledek").innerText = 
-    "Přenos bude trvat přibližně " + kalkulacka.formatCas(cas) + ".";
+  document.getElementById("vysledek").innerText = "Přenos bude trvat přibližně " + casFormat + ".";
+
+  // uložíme do historie
+  kalkulacka.pridejDoHistorie({
+    velikost,
+    jednotkaVelikost,
+    rychlost,
+    jednotkaRychlost,
+    cas: casFormat
+  });
 });
