@@ -1,17 +1,17 @@
-// objekt kalkulačky
+
 const kalkulacka = {
   historie: [],
 
   prepocetNaBity: function(velikost, jednotkaVelikost) {
     if (jednotkaVelikost === "GB") {
-      return velikost * 1024 * 1024 * 8; // GB → bity
+      return velikost * 1024 * 1024 * 8; 
     }
-    return velikost * 1024 * 1024 * 8; // MB → bity
+    return velikost * 1024 * 1024 * 8; 
   },
 
   prepocetRychlosti: function(rychlost, jednotkaRychlost) {
-    if (jednotkaRychlost === "Mbps") return rychlost * 1000000; // Mbps → b/s
-    if (jednotkaRychlost === "MBps") return rychlost * 8 * 1000000; // MB/s → b/s
+    if (jednotkaRychlost === "Mbps") return rychlost * 1000000;
+    if (jednotkaRychlost === "MBps") return rychlost * 8 * 1000000; 
     return rychlost;
   },
 
@@ -46,7 +46,6 @@ const kalkulacka = {
   }
 };
 
-// připojení formuláře
 document.getElementById("transferForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -65,12 +64,4 @@ document.getElementById("transferForm").addEventListener("submit", function(e) {
 
   document.getElementById("vysledek").innerText = "Přenos bude trvat přibližně " + casFormat + ".";
 
-  // uložíme do historie
-  kalkulacka.pridejDoHistorie({
-    velikost,
-    jednotkaVelikost,
-    rychlost,
-    jednotkaRychlost,
-    cas: casFormat
-  });
-});
+
