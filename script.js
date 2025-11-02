@@ -57,8 +57,9 @@ document.getElementById("transferForm").addEventListener("submit", function(e) {
     kalkulacka.historie.forEach((item, index) => {
         const li = document.createElement("li");
         li.className = "list-group-item";
-        li.textContent = `${index + 1}. Soubor: ${item.velikost}, Rychlost: ${item.velikost}, Čas: ${item.cas}`;
+        li.textContent = `${index + 1}. Soubor: ${item.velikost}, Rychlost: ${item.rychlost}, Čas: ${item.cas}`;
         historieUL.appendChild(li);
     });
 });
+
 
